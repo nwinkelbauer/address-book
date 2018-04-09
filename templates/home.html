@@ -17,7 +17,7 @@
   </head>
 
   <body>
-
+  		<!-- HEADER -->
 	  <nav class="navbar navbar-expand-lg navbar-light bg-light mb-5">
 		  <a class="navbar-brand" href="#">Address Book</a>
 		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,12 +42,19 @@
 		{% endif %}
 
 		<div class="container">
-		  	 <!-- <div class="custom-file mb-2">
-			    <input type="file" class="custom-file-input" id="validatedCustomFile" required>
+			<!-- upload custom file to use instead of example file -->
+		  	<!-- <div class="input-group mb-2">
+			  <div class="custom-file">
+			    <input type="file" class="custom-file-input" id="validatedCustomFile">
 			    <label class="custom-file-label" for="validatedCustomFile">Use custom address book...</label>
-			    <div class="invalid-feedback">Invalid custom file; please use a file with a txt or csv file extension.</div>
-			  </div> -->
+			  </div>
+			  <div class="input-group-append">
+			    <span class="input-group-text" id="custom-file-upload" role="button">Upload</span>
+			  </div>
+			  <div class="invalid-feedback">Invalid custom file; please use a file with a txt or csv file extension.</div>
+			</div> -->
 
+			<!--   search bar -->
 		  	<div class="input-group mb-4">
 			  <input id="search-input" type="text" class="form-control" placeholder="Search for" aria-label="Search for" aria-describedby="basic-addon2">
 			  <div class="input-group-append">
@@ -57,6 +64,7 @@
 
 
 			<table class="table table-striped" id="contact-table">
+			  <!-- Labels -->
 			  <thead>
 			    <tr>
 			      <th scope="col">First</th>
@@ -68,6 +76,7 @@
 			    </tr>
 			  </thead>
 			  <tbody>
+			  	<!-- print all people in given contact list -->
 			  {% for person in contacts %}
 			    <tr>
 			      <td>{{ person[0] }}</td>
@@ -80,11 +89,8 @@
 			   {% endfor %}
 			  </tbody>
 			</table>
-			<!-- <form class="form-inline md-form mr-auto mb-4">
-			    <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-			    <button class="btn btn-outline-warning btn-rounded btn-sm my-0" type="submit">Search</button>
-			</form> -->
 
+			<!-- FOOTER -->
 			 <footer class="border-top mt-5 mb-5">
 			 	<div class="row">
 			 		<div class="col-12 mt-1">
@@ -97,9 +103,11 @@
 
 
     <script src="{{ url_for('static', filename="jquery/jquery.js") }}"></script>
+    <script src="{{ url_for('static', filename="jquery/jquery.csv.min.js") }}"></script>
     <script src="{{ url_for('static', filename="bootstrap/js/bootstrap.min.js") }}"></script>
     <script type="text/javascript">
     $(document).ready(function() {
+      //funtion that shows/hides clear button of search bar
       function activateSearch(bool) {
       	if(!bool){
       		$("#search-button").addClass('disabled');
@@ -111,26 +119,63 @@
       	}
       }
 
+      //function to process new input file
+   //    function processData(data) {
+   //    	    var contacts = $.csv.toArrays(data);
+			// console.log(contacts);
+   //    }
+
+
+      //live filter in search bar
       $("#search-input").on("keyup", function() {
 	    var value = $(this).val().toLowerCase();
+	    //for each row in tbody, show only if contains search term
 	    $("#contact-table tbody tr").filter(function() {
 	      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
 	    });
+	    //activates clear search button while search is in use
 	    if( $("#search-button").hasClass('disabled') ) {
 	    	activateSearch(true);
 	    }
+	    //disables clear search button if search is exited
 	    if( $(this).val() == "" ) {
 	    	activateSearch(false);
 	    }
+	    //on click, clear search (button is disabled when not in clear mode)
 	    $("#search-button").on('click', function(){
 	  	  	$("#search-input").val('');
 	  	  	$("#contact-table tr").filter(function(){
 	  	  		$(this).toggle(true);
 	  	  	});
-	  	  	activateSearch(false);
+	  	  	activateSearch(false); //NOT automatically done by clearing input
 	  	  	$("#search-button").unbind('click');
 		});
-  	  });
+  	  }); //end on keyup
+
+  	  //for custom file uploader
+		// $("input[type=file]").change(function () {
+		//   var fieldVal = $(this).val();
+		//   if (fieldVal != undefined || fieldVal != "") {
+		//   	//simplified file validation
+		//   	if(fieldVal.match(/txt$/) || fieldVal.match(/csv$/)) {
+		// 	    $(this).next(".custom-file-label").html(fieldVal);
+		// 	    $(this).next(".invalid-feedback").css('display', 'none'); //back to display none once valid
+		// 	} else {
+		// 		//triggers unvalid error
+		// 		$(this).next(".invalid-feedback").css('display', 'block');
+		// 	}
+		//   }
+		// });
+
+		// //upload new file
+		// $("#custom-file-upload").on('click', function(){
+		// 	 $.ajax({
+		//         type: "GET",
+		//         url: $("#validatedCustomFile").val(),
+		//         dataType: "text",
+		//         success: function(data) {processData(data);}
+		//      });
+		// });
     })
     </script>
   </body>
