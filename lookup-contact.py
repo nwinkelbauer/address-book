@@ -8,6 +8,8 @@ app = Flask(__name__)
 @app.route('/')
 def home(name=None):
 	contacts = []
+	# adds each row as a seperate person list to the contacts list
+	# parses strings in process to remove extra characters/formats
 	with open('assets/example.txt', "r") as inputfile:
 		for row in csv.reader(inputfile):
 			row[0] = ''.join(e for e in row[0] if e.isalnum()).title();	#first
@@ -16,9 +18,9 @@ def home(name=None):
 			row[3] = row[3].title();			#city
 			row[4] = row[4].upper();			#state
 			contacts.append(row)
+	# sorts the list by last name then passes list to home template		
 	contacts = sorted(contacts, key=itemgetter(1))
 	return render_template('home.html', contacts=contacts)
-	#return 'Hello world'
 
 if __name__ == "__main__":
 	app.run(host="0.0.0.0", debug=True)

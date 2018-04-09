@@ -18,14 +18,13 @@ def test(search, file):
 	with file as inputfile:
 		#progress bar
 		with click.progressbar( csv.reader(inputfile) ) as bar:
+			#transfer all lines containing search term to contacts list
 			for row in bar:
-				#click.echo(row);
 				str1 = ''.join(row)
 				str1 = str1.decode('utf-8').strip().lower()
 				search = search.decode('utf-8').strip().lower()
 				if search in str1:
 					contacts.append(row)
-					#click.echo(str1);
 	#print all matching contacts
 	labels = ['First name', 'Last name', 'Street', 'City', 'State', 'Age']
 	if contacts:
