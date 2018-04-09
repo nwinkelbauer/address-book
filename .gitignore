@@ -2,3 +2,4 @@ make_env
 .DS_Store
 *.old*
 documents/
+node_modules/
