@@ -5,7 +5,8 @@ from prettytable import PrettyTable
 
 @click.command()
 @click.option('--search', prompt='Search for', help='String used for search within given address book file.')
-@click.option('--file', default='assets/example.txt', help='Path to the file of the address book.')
+#@click.option('--file', default='assets/example.txt', help='Path to the file of the address book.')
+@click.option('--file', default='assets/example.txt', type=click.File(mode='r', errors='strict'), help='Path to the file of the address book.')
 
 def test(search, file):
 	#Status
@@ -13,7 +14,8 @@ def test(search, file):
 	contacts = []
 	#opens file as csv and compairs search team to each row
 	#places matching rows into contacts
-	with open(file, 'rb') as inputfile:
+	#with open(file, 'rb') as inputfile:
+	with file as inputfile:
 		#progress bar
 		with click.progressbar( csv.reader(inputfile) ) as bar:
 			for row in bar:
