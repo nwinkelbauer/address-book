@@ -113,7 +113,7 @@
 
       $("#search-input").on("keyup", function() {
 	    var value = $(this).val().toLowerCase();
-	    $("#contact-table tr").filter(function() {
+	    $("#contact-table tbody tr").filter(function() {
 	      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
 	    });
 	    if( $("#search-button").hasClass('disabled') ) {
