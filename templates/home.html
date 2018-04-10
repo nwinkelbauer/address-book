@@ -43,7 +43,17 @@
 
 		<div class="container">
 			<!-- upload custom file to use instead of example file -->
-		  	<!-- <div class="input-group mb-2">
+		  	<!-- <form class="input-group mb-2" action="{{ url_for('upload') }}" method=post>
+			  <div class="custom-file">
+			    <input type="file" class="custom-file-input" id="validatedCustomFile" name="path">
+			    <label class="custom-file-label" for="validatedCustomFile">Use custom address book...</label>
+			  </div>
+			  <div class="input-group-append">
+			    <input class="input-group-text" id="custom-file-upload" type="submit" value="Upload">
+			  </div>
+			  <div class="invalid-feedback">Invalid custom file; please use a file with a txt or csv file extension.</div>
+			</form> -->
+			<div class="input-group mb-2">
 			  <div class="custom-file">
 			    <input type="file" class="custom-file-input" id="validatedCustomFile">
 			    <label class="custom-file-label" for="validatedCustomFile">Use custom address book...</label>
@@ -52,7 +62,7 @@
 			    <span class="input-group-text" id="custom-file-upload" role="button">Upload</span>
 			  </div>
 			  <div class="invalid-feedback">Invalid custom file; please use a file with a txt or csv file extension.</div>
-			</div> -->
+			</div>
 
 			<!--   search bar -->
 		  	<div class="input-group mb-4">
@@ -77,16 +87,25 @@
 			  </thead>
 			  <tbody>
 			  	<!-- print all people in given contact list -->
-			  {% for person in contacts %}
-			    <tr>
-			      <td>{{ person[0] }}</td>
-			      <td>{{ person[1] }}</td>
-			      <td>{{ person[2] }}</td>
-			      <td>{{ person[3] }}</td>
-			      <td>{{ person[4] }}</td>
-			      <td>{{ person[5] }}</td>
-			    </tr>
-			   {% endfor %}
+			  	{% macro row(contacts) -%}
+				    {% for person in contacts %}
+				    <tr>
+				      <td>{{ person[0] }}</td>
+				      <td>{{ person[1] }}</td>
+				      <td>{{ person[2] }}</td>
+				      <td>{{ person[3] }}</td>
+				      <td>{{ person[4] }}</td>
+				      <td>{{ person[5] }}</td>
+				    </tr>
+				   {% endfor %}
+				{%- endmacro %}
+
+				{% if session.contacts %}
+			  		{{ row(session.contacts) }}
+				{% else %}
+				    {{ row(contacts) }}
+				{% endif %}
+
 			  </tbody>
 			</table>
 
@@ -106,6 +125,8 @@
     <script src="{{ url_for('static', filename="jquery/jquery.csv.min.js") }}"></script>
     <script src="{{ url_for('static', filename="bootstrap/js/bootstrap.min.js") }}"></script>
     <script type="text/javascript">
+    var fs = require('fs');
+
     $(document).ready(function() {
       //funtion that shows/hides clear button of search bar
       function activateSearch(bool) {
@@ -120,10 +141,10 @@
       }
 
       //function to process new input file
-   //    function processData(data) {
-   //    	    var contacts = $.csv.toArrays(data);
-			// console.log(contacts);
-   //    }
+      function processData(data) {
+      	    var contacts = $.csv.toArrays(data);
+			console.log(contacts);
+      }
 
 
       //live filter in search bar
@@ -153,29 +174,30 @@
   	  }); //end on keyup
 
   	  //for custom file uploader
-		// $("input[type=file]").change(function () {
-		//   var fieldVal = $(this).val();
-		//   if (fieldVal != undefined || fieldVal != "") {
-		//   	//simplified file validation
-		//   	if(fieldVal.match(/txt$/) || fieldVal.match(/csv$/)) {
-		// 	    $(this).next(".custom-file-label").html(fieldVal);
-		// 	    $(this).next(".invalid-feedback").css('display', 'none'); //back to display none once valid
-		// 	} else {
-		// 		//triggers unvalid error
-		// 		$(this).next(".invalid-feedback").css('display', 'block');
-		// 	}
-		//   }
-		// });
+		$("input[type=file]").change(function () {
+		  var fieldVal = $(this).val();
+		  if (fieldVal != undefined || fieldVal != "") {
+		  	//simplified file validation
+		  	if(fieldVal.match(/txt$/) || fieldVal.match(/csv$/)) {
+			    $(this).next(".custom-file-label").html(fieldVal);
+			    $(this).next(".invalid-feedback").css('display', 'none'); //back to display none once valid
+			} else {
+				//triggers unvalid error
+				$(this).next(".invalid-feedback").css('display', 'block');
+			}
+		  }
+		});
 
 		// //upload new file
-		// $("#custom-file-upload").on('click', function(){
-		// 	 $.ajax({
-		//         type: "GET",
-		//         url: $("#validatedCustomFile").val(),
-		//         dataType: "text",
-		//         success: function(data) {processData(data);}
-		//      });
-		// });
+		$("#custom-file-upload").on('click', function(){
+			 fs.createReadStream( $("#validatedCustomFile").val() ).pipe(fs.createWriteStream('./newexample.txt'));
+			 $.ajax({
+		        type: "GET",
+		        url: './newexample.txt',
+		        dataType: "text",
+		        success: function(data) {processData(data);}
+		     });
+		});
     })
     </script>
   </body>
